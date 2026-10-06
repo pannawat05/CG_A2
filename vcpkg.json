@@ -1,0 +1,10 @@
+{
+  "name": "assignment2-future-me",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "glew",
+    "glfw3",
+    "glm",
+    "stb"
+  ]
+}

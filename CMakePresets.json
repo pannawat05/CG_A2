@@ -1,0 +1,37 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "macOS Apple Silicon (arm64)",
+      "displayName": "macOS Apple Silicon (arm64)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/mac-arm64",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "macOS Intel (x64)",
+      "displayName": "macOS Intel (x64)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/mac-intel",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_OSX_ARCHITECTURES": "x86_64",
+        "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-mac-arm64",
+      "configurePreset": "macOS Apple Silicon (arm64)"
+    },
+    {
+      "name": "build-mac-intel",
+      "configurePreset": "macOS Intel (x64)"
+    }
+  ]
+}
