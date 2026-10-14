@@ -41,7 +41,10 @@ Window::Window(int width, int height, const char* title)
         );
     }
 
-    glViewport(0, 0, m_width, m_height);
+    int framebufferWidth = 0;
+    int framebufferHeight = 0;
+    glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
+    glViewport(0, 0, framebufferWidth, framebufferHeight);
     glEnable(GL_DEPTH_TEST);
 
     glfwSetFramebufferSizeCallback(

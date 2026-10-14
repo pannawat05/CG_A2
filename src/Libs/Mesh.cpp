@@ -115,3 +115,43 @@ Mesh Mesh::plane(float size)
     std::vector<unsigned int> i = {0,1,2, 0,2,3};
     return Mesh(v, i);
 }
+
+Mesh Mesh::sphere(unsigned int segments, unsigned int rings)
+{
+    constexpr float pi = 3.14159265358979323846f;
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    vertices.reserve((segments + 1) * (rings + 1));
+    indices.reserve(segments * rings * 6);
+
+    for (unsigned int ring = 0; ring <= rings; ++ring) {
+        const float v = static_cast<float>(ring) / rings;
+        const float theta = v * pi;
+        const float y = std::cos(theta);
+        const float radius = std::sin(theta);
+
+        for (unsigned int segment = 0; segment <= segments; ++segment) {
+            const float u = static_cast<float>(segment) / segments;
+            const float phi = u * 2.0f * pi;
+            const glm::vec3 normal(
+                radius * std::cos(phi),
+                y,
+                radius * std::sin(phi)
+            );
+            vertices.push_back({normal, normal, {u, v}});
+        }
+    }
+
+    for (unsigned int ring = 0; ring < rings; ++ring) {
+        for (unsigned int segment = 0; segment < segments; ++segment) {
+            const unsigned int first = ring * (segments + 1) + segment;
+            const unsigned int next = first + segments + 1;
+            indices.insert(indices.end(), {
+                first, next + 1, next,
+                first, first + 1, next + 1
+            });
+        }
+    }
+
+    return Mesh(vertices, indices);
+}

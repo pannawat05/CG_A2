@@ -6,13 +6,13 @@ Computer Graphics / Modern OpenGL project.
 
 **FUTURE ME — AI / Computer Science Workstation**
 
-The scene represents a future version of the student as a computer scientist:
-- human future-self avatar in a futuristic suit with an augmented-reality visor
-- futuristic workstation
-- camera-facing digital monitor
-- floating AI core
-- Phong lighting
-- 3D transformations
+The scene represents a future version of the student as a computer programmer:
+- smooth procedural 3D avatar in a futuristic suit with an augmented-reality visor
+- workstation with a color-coded code editor, keyboard, and floating AI core
+- enclosed room with a furnished bookcase, seated programmer, sunset window, and warm evening light
+- Phong lighting with a 2048 × 2048 shadow map and percentage-closer filtering
+- 3D transformations and animated details
+- orbit camera: drag with the left mouse button to rotate; scroll to zoom
 - 800 × 600 OpenGL window
 
 ## Project structure

@@ -19,6 +19,7 @@ public:
 
     static Mesh cube();
     static Mesh plane(float size = 10.0f);
+    static Mesh sphere(unsigned int segments = 32, unsigned int rings = 20);
 
 private:
     unsigned int m_vao = 0;
