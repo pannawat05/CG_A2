@@ -6,6 +6,7 @@
       "displayName": "macOS Apple Silicon (arm64)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/mac-arm64",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_OSX_ARCHITECTURES": "arm64",
@@ -17,10 +18,26 @@
       "displayName": "macOS Intel (x64)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/mac-intel",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_OSX_ARCHITECTURES": "x86_64",
         "CMAKE_TOOLCHAIN_FILE": "$env{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "Windows x64 (MSVC)",
+      "displayName": "Windows x64 (MSVC)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/windows-x64",
+      "architecture": { "value": "x64", "strategy": "external" },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "CMAKE_TOOLCHAIN_FILE": "$env{USERPROFILE}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     }
   ],
@@ -32,6 +49,10 @@
     {
       "name": "build-mac-intel",
       "configurePreset": "macOS Intel (x64)"
+    },
+    {
+      "name": "build-windows-x64",
+      "configurePreset": "Windows x64 (MSVC)"
     }
   ]
 }

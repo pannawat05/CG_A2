@@ -8,6 +8,14 @@
       "program": "${command:cmake.launchTargetPath}",
       "cwd": "${workspaceFolder}",
       "stopOnEntry": false
+    },
+    {
+      "name": "Debug (Windows - MSVC)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false
     }
   ]
 }

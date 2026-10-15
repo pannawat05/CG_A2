@@ -101,7 +101,189 @@ static void drawBox(const Mesh& cube,
         sphere.draw();
     }
 
-    static void drawScene(const Mesh& cube,
+static void drawMug(const Mesh& cube, const Shader& shader,
+                    const glm::vec3& base, const glm::vec3& color)
+{
+    drawBox(cube, shader, base + glm::vec3(0.0f, 0.085f, 0.0f),
+            glm::vec3(0.07f, 0.085f, 0.07f), color);
+    drawBox(cube, shader, base + glm::vec3(0.0f, 0.165f, 0.0f),
+            glm::vec3(0.056f, 0.008f, 0.056f), glm::vec3(0.20f, 0.10f, 0.05f));
+    drawBox(cube, shader, base + glm::vec3(0.09f, 0.085f, 0.0f),
+            glm::vec3(0.022f, 0.045f, 0.012f), color);
+}
+
+static void drawSteam(const Mesh& sphere, const Shader& shader,
+                      const glm::vec3& top, float time, float seed)
+{
+    for (int i = 0; i < 3; ++i) {
+        const float phase = std::fmod(time * 0.45f + seed + i / 3.0f, 1.0f);
+        const float size = 0.034f * (1.0f - 0.55f * phase);
+        drawSphere(sphere, shader,
+                   top + glm::vec3(0.025f * std::sin(phase * 9.0f + i),
+                                   0.04f + phase * 0.38f, 0.0f),
+                   glm::vec3(size), glm::vec3(0.82f, 0.84f, 0.88f));
+    }
+}
+
+static void drawPaperStack(const Mesh& cube, const Shader& shader,
+                           const glm::vec3& center, int sheets, float lean)
+{
+    const glm::vec3 paper[] = {
+        glm::vec3(0.93f, 0.93f, 0.90f),
+        glm::vec3(0.85f, 0.90f, 0.95f),
+        glm::vec3(0.95f, 0.88f, 0.80f)
+    };
+    for (int i = 0; i < sheets; ++i) {
+        const float x = center.x + lean * i + 0.012f * std::sin(i * 1.7f);
+        const float z = center.z + 0.010f * std::cos(i * 2.1f);
+        drawBox(cube, shader,
+                glm::vec3(x, center.y + 0.011f + i * 0.024f, z),
+                glm::vec3(0.19f, 0.011f, 0.14f),
+                paper[i % 3], 0.12f * std::sin(i * 2.3f));
+    }
+}
+
+static void drawFunnyProps(const Mesh& cube, const Mesh& sphere,
+                           const Shader& shader, float time)
+{
+    const float deskTop = 0.14f;
+    const glm::vec3 white(0.90f, 0.90f, 0.88f);
+    const glm::vec3 paperWhite(0.93f, 0.93f, 0.90f);
+    const glm::vec3 black(0.03f, 0.03f, 0.04f);
+    const glm::vec3 hair(0.045f, 0.075f, 0.095f);
+
+    drawPaperStack(cube, shader, glm::vec3(-1.52f, deskTop, -0.25f), 18, 0.004f);
+    drawPaperStack(cube, shader, glm::vec3(1.45f, deskTop, -0.30f), 8, -0.006f);
+
+    const float floorY = -1.146f;
+    const float sheets[][3] = {
+        {-1.20f, 1.20f, 0.6f}, {-0.10f, 1.55f, -0.4f}, {0.50f, 1.10f, 1.1f},
+        {-1.70f, 0.80f, 0.3f}, {0.15f, 2.00f, 0.9f}, {-0.80f, 1.85f, -0.7f}
+    };
+    for (const auto& s : sheets) {
+        drawBox(cube, shader, glm::vec3(s[0], floorY, s[1]),
+                glm::vec3(0.14f, 0.002f, 0.10f), paperWhite, s[2]);
+    }
+
+    drawBox(cube, shader, glm::vec3(0.75f, deskTop + 0.035f, 0.10f),
+            glm::vec3(0.30f, 0.035f, 0.28f), glm::vec3(0.62f, 0.45f, 0.28f));
+    drawSphere(sphere, shader, glm::vec3(0.88f, deskTop + 0.072f, 0.20f),
+               glm::vec3(0.07f, 0.003f, 0.055f), glm::vec3(0.40f, 0.22f, 0.10f));
+    drawSphere(sphere, shader, glm::vec3(0.72f, deskTop + 0.072f, 0.30f),
+               glm::vec3(0.06f, 0.003f, 0.05f), glm::vec3(0.40f, 0.22f, 0.10f));
+
+    drawMug(cube, shader, glm::vec3(-1.45f, deskTop, 0.60f), white);
+    drawMug(cube, shader, glm::vec3(-1.28f, deskTop, 0.12f), glm::vec3(0.95f, 0.80f, 0.25f));
+    drawMug(cube, shader, glm::vec3(1.35f, deskTop, 0.50f), glm::vec3(0.90f, 0.45f, 0.60f));
+    drawMug(cube, shader, glm::vec3(1.55f, deskTop, 0.18f), glm::vec3(0.30f, 0.50f, 0.85f));
+    drawMug(cube, shader, glm::vec3(0.62f, deskTop + 0.07f, 0.05f), glm::vec3(0.80f, 0.25f, 0.25f));
+
+    drawSteam(sphere, shader, glm::vec3(-1.45f, deskTop + 0.17f, 0.60f), time, 0.0f);
+    drawSteam(sphere, shader, glm::vec3(0.62f, deskTop + 0.24f, 0.05f), time, 0.5f);
+
+    drawBox(cube, shader, glm::vec3(0.36f, deskTop + 0.004f, 0.62f),
+            glm::vec3(0.15f, 0.004f, 0.11f), glm::vec3(0.20f, 0.10f, 0.05f));
+    drawBox(cube, shader, glm::vec3(0.55f, deskTop + 0.07f, 0.62f),
+            glm::vec3(0.07f, 0.085f, 0.07f), glm::vec3(0.30f, 0.75f, 0.45f),
+            0.0f, 1.5708f);
+    drawBox(cube, shader, glm::vec3(0.468f, deskTop + 0.07f, 0.62f),
+            glm::vec3(0.008f, 0.056f, 0.056f), glm::vec3(0.20f, 0.10f, 0.05f));
+    drawBox(cube, shader, glm::vec3(0.55f, deskTop + 0.16f, 0.62f),
+            glm::vec3(0.022f, 0.045f, 0.012f), glm::vec3(0.30f, 0.75f, 0.45f),
+            0.0f, 1.5708f);
+
+    const float duckX = 0.75f, duckZ = -0.30f;
+    const float monitorTop = 1.64f;
+    const glm::vec3 yellow(1.0f, 0.85f, 0.15f);
+    drawSphere(sphere, shader, glm::vec3(duckX, monitorTop + 0.09f, duckZ),
+               glm::vec3(0.12f, 0.09f, 0.13f), yellow);
+    drawSphere(sphere, shader, glm::vec3(duckX, monitorTop + 0.21f, duckZ + 0.07f),
+               glm::vec3(0.07f), yellow);
+    drawBox(cube, shader, glm::vec3(duckX, monitorTop + 0.20f, duckZ + 0.15f),
+            glm::vec3(0.03f, 0.012f, 0.04f), glm::vec3(1.0f, 0.50f, 0.10f));
+    for (float side : {-0.03f, 0.03f}) {
+        drawSphere(sphere, shader, glm::vec3(duckX + side, monitorTop + 0.235f, duckZ + 0.125f),
+                   glm::vec3(0.012f), black);
+        drawSphere(sphere, shader, glm::vec3(duckX + side * 3.8f, monitorTop + 0.095f, duckZ),
+                   glm::vec3(0.03f, 0.05f, 0.09f), glm::vec3(0.95f, 0.75f, 0.10f));
+    }
+
+    struct Note { float x, y, tilt; glm::vec3 color; };
+    const glm::vec3 noteYellow(1.0f, 0.90f, 0.30f);
+    const glm::vec3 notePink(1.0f, 0.50f, 0.70f);
+    const glm::vec3 noteGreen(0.50f, 0.90f, 0.50f);
+    const glm::vec3 noteOrange(1.0f, 0.65f, 0.25f);
+    const Note notes[] = {
+        {-1.065f, 1.30f,  0.10f, noteYellow}, {-1.065f, 0.95f, -0.12f, notePink},
+        {-1.065f, 0.62f,  0.08f, noteGreen},  { 1.065f, 1.22f, -0.09f, noteOrange},
+        { 1.065f, 0.80f,  0.14f, noteYellow}, {-0.70f, 1.585f,  0.06f, notePink},
+        { 0.35f, 1.585f, -0.10f, noteGreen}
+    };
+    for (const Note& n : notes) {
+        drawBox(cube, shader, glm::vec3(n.x, n.y, -0.206f),
+                glm::vec3(0.045f, 0.045f, 0.004f), n.color, 0.0f, n.tilt);
+    }
+
+    if (std::sin(time * 5.0f) > 0.0f) {
+        drawBox(cube, shader, glm::vec3(0.20f, 0.50f, -0.168f),
+                glm::vec3(0.62f, 0.05f, 0.006f), glm::vec3(0.90f, 0.15f, 0.15f));
+        for (int k = 0; k < 5; ++k) {
+            drawBox(cube, shader, glm::vec3(-0.20f + k * 0.18f, 0.50f, -0.165f),
+                    glm::vec3(0.06f, 0.012f, 0.007f), glm::vec3(1.0f));
+        }
+    }
+
+    const float bugPhase = time * 0.6f;
+    const float bugX = -0.45f + 0.65f * std::sin(bugPhase);
+    const float bugDir = std::cos(bugPhase) >= 0.0f ? 1.0f : -1.0f;
+    const glm::vec3 bugPos(bugX, deskTop + 0.035f, 0.30f);
+    drawSphere(sphere, shader, bugPos, glm::vec3(0.055f, 0.035f, 0.055f),
+               glm::vec3(0.85f, 0.10f, 0.10f));
+    drawSphere(sphere, shader, bugPos + glm::vec3(bugDir * 0.055f, 0.0f, 0.0f),
+               glm::vec3(0.03f, 0.025f, 0.03f), black);
+    for (float side : {-0.02f, 0.02f}) {
+        drawSphere(sphere, shader, bugPos + glm::vec3(-bugDir * 0.015f, 0.03f, side),
+                   glm::vec3(0.012f), black);
+    }
+    for (int k = -1; k <= 1; ++k) {
+        drawBox(cube, shader, glm::vec3(bugX + k * 0.032f, deskTop + 0.006f, 0.30f),
+                glm::vec3(0.004f, 0.003f, 0.075f), black,
+                0.5f * std::sin(time * 25.0f + k * 2.0f));
+    }
+
+    drawBox(cube, shader, glm::vec3(2.30f, -0.85f, 0.50f),
+            glm::vec3(0.20f, 0.30f, 0.20f), glm::vec3(0.20f, 0.22f, 0.25f));
+    drawBox(cube, shader, glm::vec3(2.30f, -0.54f, 0.50f),
+            glm::vec3(0.22f, 0.015f, 0.22f), glm::vec3(0.14f, 0.16f, 0.18f));
+    const float balls[][3] = {
+        {2.22f, -0.46f, 0.44f}, {2.38f, -0.45f, 0.56f}, {2.30f, -0.36f, 0.50f},
+        {2.20f, -0.50f, 0.58f}, {1.95f, -1.07f, 0.72f}, {2.05f, -1.07f, 0.15f},
+        {2.62f, -1.07f, 0.95f}, {1.70f, -1.07f, 0.45f}
+    };
+    for (const auto& b : balls) {
+        drawSphere(sphere, shader, glm::vec3(b[0], b[1], b[2]),
+                   glm::vec3(0.09f), glm::vec3(0.90f, 0.90f, 0.86f));
+    }
+
+    const float spikes[][4] = {
+        {-0.72f, 1.50f, 0.98f,  0.70f}, {-0.60f, 1.56f, 1.00f,  0.25f},
+        {-0.48f, 1.58f, 1.00f, -0.15f}, {-0.38f, 1.54f, 0.98f, -0.50f},
+        {-0.30f, 1.47f, 0.95f, -0.90f}
+    };
+    for (const auto& s : spikes) {
+        drawSphere(sphere, shader, glm::vec3(s[0], s[1], s[2]),
+                   glm::vec3(0.045f, 0.11f, 0.045f), hair, s[3]);
+    }
+    drawSphere(sphere, shader, glm::vec3(-0.55f, 1.66f, 0.97f),
+               glm::vec3(0.022f, 0.13f, 0.022f), hair, -0.30f);
+
+    const float dropPhase = std::fmod(time * 0.7f, 1.0f);
+    drawSphere(sphere, shader, glm::vec3(-0.27f, 1.40f - dropPhase * 0.45f, 0.72f),
+               glm::vec3(0.022f, 0.04f * (1.0f - 0.3f * dropPhase), 0.022f),
+               glm::vec3(0.35f, 0.70f, 1.0f));
+}
+
+static void drawScene(const Mesh& cube,
                   const Mesh& sphere,
                   const Mesh& floor,
                   const Shader& shader,
@@ -116,7 +298,6 @@ static void drawBox(const Mesh& cube,
         drawBox(floor, shader, glm::vec3(0.0f, -1.15f, 0.0f),
             glm::vec3(1.0f), glm::vec3(0.11f, 0.16f, 0.21f));
 
-            // Rear wall and a sunset window with a warm pool of light on the floor.
             drawBox(cube, shader, glm::vec3(0.0f, 0.68f, -2.32f),
                 glm::vec3(3.9f, 1.82f, 0.10f), glm::vec3(0.14f, 0.17f, 0.21f));
                 drawBox(cube, shader, glm::vec3(-3.92f, 0.68f, 0.35f),
@@ -153,7 +334,6 @@ static void drawBox(const Mesh& cube,
                 0.0f, -0.07f);
             }
 
-            // Walnut bookcase with colorful books, a small plant, and a globe.
             const float shelfZ = -1.91f;
             const glm::vec3 woodColor(0.31f, 0.19f, 0.12f);
             drawBox(cube, shader, glm::vec3(-3.08f, 0.28f, shelfZ - 0.10f),
@@ -197,7 +377,6 @@ static void drawBox(const Mesh& cube,
             drawBox(cube, shader, glm::vec3(-2.61f, 1.49f, shelfZ + 0.14f),
                 glm::vec3(0.12f, 0.035f, 0.10f), woodColor);
 
-        // Desk, metal legs, and a raised edge that catches the key light.
         drawBox(cube, shader, glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(1.75f, 0.14f, 0.72f), glm::vec3(0.12f, 0.19f, 0.25f));
         drawBox(cube, shader, glm::vec3(0.0f, -0.16f, 0.69f),
@@ -207,7 +386,6 @@ static void drawBox(const Mesh& cube,
             glm::vec3(0.075f, 0.49f, 0.08f), glm::vec3(0.16f, 0.21f, 0.25f));
         }
 
-        // Monitor with a readable, colorful code-editor layout.
         drawBox(cube, shader, glm::vec3(0.0f, 0.96f, -0.30f),
             glm::vec3(1.12f, 0.68f, 0.09f), glm::vec3(0.035f, 0.075f, 0.10f));
         drawBox(cube, shader, glm::vec3(0.0f, 0.96f, -0.202f),
@@ -232,7 +410,6 @@ static void drawBox(const Mesh& cube,
             codeColors[row % 3]);
         }
 
-        // Chair and programmer are centered on the keyboard, facing the display.
         drawBox(cube, shader, glm::vec3(-0.55f, -0.30f, 0.98f),
             glm::vec3(0.38f, 0.07f, 0.36f), glm::vec3(0.15f, 0.19f, 0.23f));
         drawBox(cube, shader, glm::vec3(-0.55f, 0.10f, 1.34f),
@@ -246,7 +423,6 @@ static void drawBox(const Mesh& cube,
         drawBox(cube, shader, glm::vec3(-0.55f, -0.65f, 0.98f),
             glm::vec3(0.30f, 0.035f, 0.30f), glm::vec3(0.18f, 0.22f, 0.25f));
 
-        // Future programmer seated upright, with hands resting on the keyboard.
         drawSphere(sphere, shader, glm::vec3(-0.55f, 0.19f, 0.94f),
             glm::vec3(0.39f, 0.52f, 0.24f), suit, -0.06f);
         drawSphere(sphere, shader, glm::vec3(-0.55f, 0.80f, 0.91f),
@@ -260,50 +436,29 @@ static void drawBox(const Mesh& cube,
         drawBox(cube, shader, glm::vec3(-0.55f, 0.50f, 0.695f),
             glm::vec3(0.095f, 0.09f, 0.025f), cyan);
 
-        for (float x : {-0.87f, -0.23f}) {
-            drawSphere(sphere, shader, glm::vec3(x, 0.28f, 0.84f),
-                glm::vec3(0.14f, 0.28f, 0.14f), suit);
-            drawSphere(sphere, shader, glm::vec3(x, 0.10f, 0.68f),
-                glm::vec3(0.11f, 0.10f, 0.22f), suit);
-            drawSphere(sphere, shader, glm::vec3(x, 0.27f, 0.59f),
-                glm::vec3(0.12f, 0.075f, 0.10f), skin);
+        for (float x : {-0.82f, -0.28f}) {
+            drawSphere(sphere, shader, glm::vec3(x, 0.31f, 0.82f),
+                glm::vec3(0.115f, 0.22f, 0.13f), suit, -0.10f);
+
+            drawSphere(sphere, shader, glm::vec3(x, 0.16f, 0.66f),
+                glm::vec3(0.095f, 0.085f, 0.19f), suit, -0.06f);
+
+            drawSphere(sphere, shader, glm::vec3(x, 0.285f, 0.57f),
+                glm::vec3(0.095f, 0.055f, 0.09f), skin);
         }
 
         for (float x : {-0.68f, -0.42f}) {
-            drawSphere(sphere, shader, glm::vec3(x, -0.29f, 1.20f),
-                glm::vec3(0.15f, 0.14f, 0.33f), suit);
-            drawSphere(sphere, shader, glm::vec3(x, -0.65f, 1.47f),
-                glm::vec3(0.12f, 0.32f, 0.13f), suit);
-            drawSphere(sphere, shader, glm::vec3(x, -1.04f, 1.53f),
-                glm::vec3(0.18f, 0.09f, 0.24f), glm::vec3(0.035f, 0.06f, 0.075f));
+            drawSphere(sphere, shader, glm::vec3(x, -0.31f, 0.68f),
+                glm::vec3(0.14f, 0.13f, 0.30f), suit, -0.08f);
+
+            drawSphere(sphere, shader, glm::vec3(x, -0.68f, 0.53f),
+                glm::vec3(0.105f, 0.27f, 0.11f), suit, 0.02f);
+
+            drawSphere(sphere, shader, glm::vec3(x, -1.035f, 0.34f),
+                glm::vec3(0.14f, 0.075f, 0.20f),
+                glm::vec3(0.035f, 0.06f, 0.075f));
         }
 
-        // One arm reaches toward the keyboard; the other rests by the side.
-        drawSphere(sphere, shader, glm::vec3(-2.35f, 0.28f, 0.25f),
-               glm::vec3(0.15f, 0.34f, 0.15f), suit, -0.52f);
-        drawSphere(sphere, shader, glm::vec3(-2.52f, -0.20f, 0.28f),
-               glm::vec3(0.12f, 0.29f, 0.12f), suit, -0.10f);
-        drawSphere(sphere, shader, glm::vec3(-1.73f, 0.34f, 0.29f),
-               glm::vec3(0.15f, 0.34f, 0.15f), suit, 0.55f);
-        drawSphere(sphere, shader, glm::vec3(-1.42f, 0.16f, 0.45f),
-               glm::vec3(0.115f, 0.27f, 0.115f), suit, 0.92f);
-        drawSphere(sphere, shader, glm::vec3(-1.18f, 0.055f, 0.58f),
-               glm::vec3(0.13f, 0.085f, 0.11f), skin, -0.15f);
-
-        drawSphere(sphere, shader, glm::vec3(-2.14f, -0.29f, 0.57f),
-                   glm::vec3(0.15f, 0.15f, 0.47f), suit);
-        drawSphere(sphere, shader, glm::vec3(-1.88f, -0.29f, 0.57f),
-                   glm::vec3(0.15f, 0.15f, 0.47f), suit);
-        drawSphere(sphere, shader, glm::vec3(-2.14f, -0.65f, 0.94f),
-                   glm::vec3(0.13f, 0.34f, 0.13f), suit);
-        drawSphere(sphere, shader, glm::vec3(-1.88f, -0.65f, 0.94f),
-                   glm::vec3(0.13f, 0.34f, 0.13f), suit);
-        drawSphere(sphere, shader, glm::vec3(-2.14f, -1.04f, 1.03f),
-                   glm::vec3(0.19f, 0.09f, 0.25f), glm::vec3(0.035f, 0.06f, 0.075f));
-        drawSphere(sphere, shader, glm::vec3(-1.88f, -1.04f, 1.03f),
-                   glm::vec3(0.19f, 0.09f, 0.25f), glm::vec3(0.035f, 0.06f, 0.075f));
-
-        // Keyboard, paired with the coder's forward hand.
         drawBox(cube, shader, glm::vec3(-0.48f, 0.19f, 0.64f),
             glm::vec3(0.68f, 0.045f, 0.22f), glm::vec3(0.18f, 0.23f, 0.28f));
         drawBox(cube, shader, glm::vec3(-0.48f, 0.238f, 0.64f),
@@ -315,13 +470,12 @@ static void drawBox(const Mesh& cube,
             key % 3 == 0 ? cyan : glm::vec3(0.25f, 0.43f, 0.48f));
         }
 
-        const float hoverY = 1.35f + 0.09f * std::sin(time * 2.0f);
-        drawSphere(sphere, shader, glm::vec3(1.27f, hoverY, 0.22f),
-               glm::vec3(0.16f), glm::vec3(0.08f, 0.62f, 0.88f));
         if (showLight) {
         drawSphere(sphere, shader, lightPos, glm::vec3(0.075f),
                glm::vec3(1.0f, 0.78f, 0.45f));
         }
+
+        drawFunnyProps(cube, sphere, shader, time);
     }
 
 int main()
